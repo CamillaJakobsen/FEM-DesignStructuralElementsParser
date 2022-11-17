@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 using FemDesign;
 using System.Globalization;
-
+using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
+using System.Reflection.PortableExecutable;
+using FemDesign.Results;
+using FemDesignProgram.Containers;
 
 namespace StructuralElementsExporter.StructuralAnalysis
 {
@@ -18,99 +22,195 @@ namespace StructuralElementsExporter.StructuralAnalysis
         static void Main(string[] args)
         {
 
-            string path = @"C:\Users\camil\FEM-design_API_test.struxml";
+            string path = @"C:\femdesign-api\FEM-design_API_test_quantities.struxml";
             string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
-            string outFolder = @"C:\Users\camil\FemDesign_API_test";
+            string outFolder = @"C:\femdesign-api\";
             string tempPath = outFolder + "temp.struxml";
 
             //List<XmlElement> xmlElements = new List<XmlElement>();
 
-
+            // Read model
             Model model = Model.DeserializeFromFilePath(path);
             //Quantities quantities = quantities.DeserializeFromFilePath(bscPathtest);
 
-            //double concreteCost = 20;
-            //double reinforcementCost = 70;
-            //double concreteWeight = 0;
-            //double reinforcementWeight = 0;
+            var units = new FemDesign.Results.UnitResults(FemDesign.Results.Length.m, FemDesign.Results.Angle.deg, FemDesign.Results.SectionalData.mm, FemDesign.Results.Force.kN, FemDesign.Results.Mass.kg, FemDesign.Results.Displacement.cm, FemDesign.Results.Stress.MPa);
 
-            //public Dictionary<string, string> MaterialProperties { get; set; } = new Dictionary<string, string>();
-
-            List<object> bars = new List<object>();
-
-            bars.Add(model.Entities.Bars);
-
-
-            FemDesign.Shells.Slab slab = model.Entities.Slabs[0];
-            FemDesign.Materials.Material material = model.Entities.Slabs[0].Material;
-            //FemDesign.Materials.Material material = model.Entities.Slabs[1];
-
-            FemDesign.Bars.Bar bar = model.Entities.Bars[0];
-
-            FemDesign.Shells.Panel panel = model.Entities.Panels[0];
-
-        }
-
-
-        public string materialID =
-
-
-        #region Analysis Setup
-        bool NLE = true;
-            bool PL = false;
-        bool NLS = false;
-        bool Cr = false;
-        bool _2nd = false;
-
-        // SETTING UP LOAD COMBINATIONS
-        // In this example, we use the same settings (CombItem)
-        // for all load combinations, applied with a simple loop.
-        var combItem = new FemDesign.Calculate.CombItem(0, 0, NLE, PL, NLS, Cr, _2nd);
-
-        int numLoadCombs = model.Entities.Loads.LoadCombinations.Count;
-        var combItems = new List<FemDesign.Calculate.CombItem>();
-            for (int i = 0; i<numLoadCombs; i++)
+            var resultTypes = new List<Type>
             {
-                combItems.Add(combItem);
-            }
+                typeof(FemDesign.Results.QuantityEstimationConcrete),
+                typeof(FemDesign.Results.QuantityEstimationReinforcement),
+                typeof(FemDesign.Results.QuantityEstimationSteel),
+                typeof(FemDesign.Results.QuantityEstimationTimber),
+                typeof(FemDesign.Results.QuantityEstimationProfiledPlate),
+                typeof(FemDesign.Results.QuantityEstimationTimberPanel)
+            };
 
-    FemDesign.Calculate.Comb comb = new FemDesign.Calculate.Comb();
-    comb.CombItem = combItems.ToList();
+            var bscPathsFromResultTypes = FemDesign.Calculate.Bsc.BscPathFromResultTypes(resultTypes, bscPathtest);
 
+
+            #region ANALYSIS
+            // Running the analysis
+            var analysisSettings = FemDesign.Calculate.Analysis.StaticAnalysis();
+
+            // creates csv files
+            var fdScript = FemDesign.Calculate.FdScript.Analysis(path, analysisSettings, bscPathsFromResultTypes, null, true);
+            //FemDesign.Calculate.CmdListGen(outFolder)
+
+            var app = new FemDesign.Calculate.Application();
+            app.RunFdScript(fdScript, false, true);
+            model.SerializeModel(path);
+
+            // Read model and results
+            model = Model.DeserializeFromFilePath(fdScript.StruxmlPath);
             #endregion
 
-            double low = 0.2;
-    double high = 0.7;
+            #region EXTRACT RESULTS
 
-    List<double> costs = new List<double>();
+            //IEnumerable<FemDesign.Results.IResult> results = Enumerable.Empty<FemDesign.Results.IResult>();
 
-            for (double i = low; i<high; i = i + 0.5)
+            //foreach (var cmd in fdScript.CmdListGen)
+            //{
+            //    string path2 = cmd.OutFile;
+            //    var _results = FemDesign.Results.ResultsReader.Parse(path2);
+            //    results = results.Concat(_results);
+            //}
+            #endregion
+
+
+            //        //Read results from csv file
+            //        double concreteWeight = 0;
+            //        int counter = 0;
+            
+            IEnumerable<FemDesign.Results.IQuantityEstimationResult> quantityEstimations = Enumerable.Empty<FemDesign.Results.IQuantityEstimationResult>();
+            Beams beams = new Beams();
+            Decks decks = new Decks();
+            Walls walls = new Walls();
+            Columns columns = new Columns();
+
+            foreach (var cmd in fdScript.CmdListGen)
             {
-                double thickness = i;
-    slab.SlabPart.Thickness[0].Value = Math.Round(thickness, 3);
+                string csvfiles = cmd.OutFile;
+                var _results = FemDesign.Results.ResultsReader.Parse(csvfiles);
+                int counter = 0;
+                using (var reader = new StreamReader(csvfiles))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                    var line = reader.ReadLine();
+                    var values = line.Split("\t");
+                    if (values[0] == "-" & line != "")
+                    {
+                        if (values[1] == "Beam" & line != "")
+                            {
+                                string v = values[2];
+                                string typeID = v;
+                                string materialID = values[3];
+                                string volumeString = values[8];
+                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string lengthString = values[7];
+                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string weightString = values[9];
+                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                //Save temporary model
-                model.SerializeModel(tempPath);
+                                Beam beam = new Beam(typeID, materialID, length, volume, weight);
+                                beams.AddBeam(beam);
+                              
+                            }
+                        else if (values[1] == "Column" & line != "")
+                            {
+                                string v = values[2];
+                                string typeID = v;
+                                string materialID = values[3];
+                                string volumeString = values[8];
+                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string lengthString = values[7];
+                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string weightString = values[9];
+                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                Column column = new Column(typeID, materialID, length, volume, weight);
+                                columns.AddColumn(column);
+
+                            }
+                            else if (values[1] == "Truss" & line != "")
+                            {
+                                string v = values[2];
+                                string typeID = v;
+                                string materialID = values[3];
+                                string volumeString = values[8];
+                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string lengthString = values[7];
+                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string weightString = values[9];
+                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                Column column = new Column(typeID, materialID, length, volume, weight);
+                                columns.AddColumn(column);
+
+                            }
+                            else if (values[1] == "Plate" & line != "")
+                            {
+                                string typeID = values[2];
+                                string materialID = values[3];
+                                string areaString = values[7];
+                                double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string thicknessString = values[4];
+                                double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                Deck deck = new Deck(typeID, materialID, area, thickness);
+                                decks.AddDeck(deck);
+                            }
+                        else if (values[1] == "Wall" & line != "")
+                            {
+                                string typeID = values[2];
+                                string materialID = values[3];
+                                string areaString = values[7];
+                                double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                string thicknessString = values[4];
+                                double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                Wall wall = new Wall(typeID, materialID, area, thickness);
+                                walls.AddWall(wall);
+                            }
+
+                            //double length = X509SubjectKeyIdentifierHashAlgorithm nok komme fra struxml
+                            //double volume = values[10];
+                            //ouble weight = values[11];
+                            //Console.WriteLine(string.Format("{0} {1} {2}", values[0], "concrete", values[10]));
+                            //concreteWeight = double.Parse(values[9], CultureInfo.InvariantCulture);
+                        }
+                    counter++;
+
+                    }
+                             
+                }
 
 
-                //Calculate cost, write to console app and write to list
-                double totalCost = concreteCost * concreteWeight + reinforcementCost * reinforcementWeight;
-    Console.WriteLine(string.Format("{0} {1} {2}", "Cost: ", totalCost, Math.Round(thickness, 3) + "m"));
-                costs.Add(totalCost);
+
+
+
+                // Display Results on Screen
+                // The results are grouped by their type
+                //var resultGroups = results.GroupBy(t => t.GetType()).ToList();
+                //foreach (var resultGroup in resultGroups)
+                //{
+                //    Console.WriteLine(resultGroup.Key.Name);
+                //    Console.WriteLine();
+                //    foreach (var result in resultGroup)
+                //    {
+                //        Console.WriteLine(result);
+                //    }
+                //    Console.WriteLine();
+
+
+
+                //}
+
+
 
             }
-
-
         }
 
-        //public static void RunAnalysis(string modelPath, List<string> bscFilePaths)
-        //{
-        //    FemDesign.Calculate.Analysis analysis = new FemDesign.Calculate.Analysis(null, null, null, null, false, false, false, false, false, false, false, false, false, false, false, false);
-        //    FemDesign.Calculate.Design design = new FemDesign.Calculate.Design(true, false);
-        //    FemDesign.Calculate.FdScript fdScript = FemDesign.Calculate.FdScript.Design("rc", modelPath, analysis, design, bscFilePaths, "", true);
-        //    FemDesign.Calculate.Application app = new FemDesign.Calculate.Application();
-        //    //app.RunRfScript(fdScript, false, true, true);
-        //}
-
     }
-
+}
+    
