@@ -10,7 +10,9 @@ namespace FemDesignProgram.Containers
     {
         // Declaring variables
         public string TypeID { get; set; }
-        public string MaterialID { get; set; }
+        public string Material { get; set; }
+
+        public string Quality { get; set; }
         public double Length { get; set; }
 
         public double Volume { get; set; }
@@ -19,10 +21,11 @@ namespace FemDesignProgram.Containers
         //public Dictionary<string, string> MaterialProperties { get; set; } = new Dictionary<string, string>();
 
         // Constructor: Starts with lower case letter
-        public Beam(string typeID, string materialID, double length, double volume, double weight)
+        public Beam(string typeID, string material,string quality, double length, double volume, double weight)
         {
             TypeID = typeID;
-            MaterialID = materialID;
+            Material = material;
+            Quality = quality;
             Length = length;
             Volume = volume;
             Weight = weight;

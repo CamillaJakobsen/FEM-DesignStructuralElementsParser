@@ -10,7 +10,8 @@ namespace FemDesignProgram.Containers
     {
         // Declaring variables
         public string TypeID { get; set; }
-        public string MaterialID { get; set; }
+        public string Material { get; set; }
+        public string Quality { get; set; }
         public double Area { get; set; }
         public double Thickness { get; set; }
         //public Dictionary<string, string> MaterialProperties { get; set; } = new Dictionary<string, string>();
@@ -18,10 +19,11 @@ namespace FemDesignProgram.Containers
 
 
         // Constructor: Starts with lower case letter
-        public Deck(string typeID, string materialID, double area, double thickness)
+        public Deck(string typeID, string material, string quallity, double area, double thickness)
         {
             TypeID = typeID;
-            MaterialID = materialID;
+            Material = material;
+            Quality = quallity;
             Area = area;
             Thickness = thickness;
 

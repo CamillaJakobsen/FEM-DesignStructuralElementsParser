@@ -22,7 +22,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
         static void Main(string[] args)
         {
 
-            string path = @"C:\femdesign-api\FEM-design_API_test_quantities.struxml";
+            string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
             string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
             string outFolder = @"C:\femdesign-api\";
             string tempPath = outFolder + "temp.struxml";

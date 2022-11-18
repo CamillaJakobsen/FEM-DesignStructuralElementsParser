@@ -10,17 +10,18 @@ namespace FemDesignProgram.Containers
     {
         // Declaring variables
         public int TypeID { get; set; }
-        public string MaterialID { get; set; }
+        public string Material { get; set; }
+        public string Quality { get; set; }
         public double Volume { get; set; }
 
-        // Key value pairs indgår i Dictionary
-        public Dictionary<string, string> MaterialProperties { get; set; } = new Dictionary<string, string>();
+       
 
         // Constructor: Starts with lower case letter
-        public Foundation(int typeID, string materialID, double volume)
+        public Foundation(int typeID, string material, string quality, double volume)
         {
             TypeID = typeID;
-            MaterialID = materialID;
+            Material = material;
+            Quality = quality;
             Volume = volume;
 
 
