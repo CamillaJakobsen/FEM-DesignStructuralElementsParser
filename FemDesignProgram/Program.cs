@@ -11,6 +11,8 @@ using System.Reflection;
 using System.Reflection.PortableExecutable;
 using FemDesign.Results;
 using FemDesignProgram.Containers;
+using FemDesign.Materials;
+using Newtonsoft.Json;
 
 namespace StructuralElementsExporter.StructuralAnalysis
 {
@@ -39,12 +41,13 @@ namespace StructuralElementsExporter.StructuralAnalysis
             {
                 typeof(FemDesign.Results.QuantityEstimationConcrete),
                 typeof(FemDesign.Results.QuantityEstimationReinforcement),
-                typeof(FemDesign.Results.QuantityEstimationSteel),
+                //typeof(FemDesign.Results.QuantityEstimationSteel),
                 typeof(FemDesign.Results.QuantityEstimationTimber),
                 typeof(FemDesign.Results.QuantityEstimationProfiledPlate),
                 typeof(FemDesign.Results.QuantityEstimationTimberPanel)
             };
 
+            // Creating the bsc paths in C:\femdesign-api\quantities_test\scripts
             var bscPathsFromResultTypes = FemDesign.Calculate.Bsc.BscPathFromResultTypes(resultTypes, bscPathtest);
 
 
@@ -54,9 +57,10 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
             // creates csv files
             var fdScript = FemDesign.Calculate.FdScript.Analysis(path, analysisSettings, bscPathsFromResultTypes, null, true);
-            //FemDesign.Calculate.CmdListGen(outFolder)
+            
 
             var app = new FemDesign.Calculate.Application();
+            // creates the csv files at the location: C:\femdesign-api\Quantities\FEM-design_quantities\results
             app.RunFdScript(fdScript, false, true);
             model.SerializeModel(path);
 
@@ -89,6 +93,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
             foreach (var cmd in fdScript.CmdListGen)
             {
+                
                 string csvfiles = cmd.OutFile;
                 var _results = FemDesign.Results.ResultsReader.Parse(csvfiles);
                 int counter = 0;
@@ -97,118 +102,398 @@ namespace StructuralElementsExporter.StructuralAnalysis
                     while (!reader.EndOfStream)
                     {
                     var line = reader.ReadLine();
-                    var values = line.Split("\t");
-                    if (values[0] == "-" & line != "")
+                    var valuesMaterial = line.Split("\t");
+                    string currentMaterialString = valuesMaterial[0];
+                    if (currentMaterialString == "Quantity estimation, Concrete")
                     {
-                        if (values[1] == "Beam" & line != "")
+                            var nextLine = reader.ReadLine(); 
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] == "-" & line != "")
                             {
-                                string v = values[2];
-                                string typeID = v;
-                                string materialID = values[3];
-                                string volumeString = values[8];
-                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string lengthString = values[7];
-                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string weightString = values[9];
-                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                if (values[1] == "Beam" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Concrete";
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                Beam beam = new Beam(typeID, materialID, length, volume, weight);
-                                beams.AddBeam(beam);
-                              
+                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    beams.AddBeam(beam);
+
+                                }
+                                else if (values[1] == "Column" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "concrete";
+                                    string quality = values[3];
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Truss" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "concrete";
+                                    string quality = values[3];
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "concrete";
+                                    string quality = values[3];
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+                                else if (values[1] == "Wall" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "concrete";
+                                    string quality = values[3];
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
+                                    walls.AddWall(wall);
+                                }
+                                counter++;
                             }
-                        else if (values[1] == "Column" & line != "")
-                            {
-                                string v = values[2];
-                                string typeID = v;
-                                string materialID = values[3];
-                                string volumeString = values[8];
-                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string lengthString = values[7];
-                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string weightString = values[9];
-                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
-
-                                Column column = new Column(typeID, materialID, length, volume, weight);
-                                columns.AddColumn(column);
-
-                            }
-                            else if (values[1] == "Truss" & line != "")
-                            {
-                                string v = values[2];
-                                string typeID = v;
-                                string materialID = values[3];
-                                string volumeString = values[8];
-                                double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string lengthString = values[7];
-                                double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string weightString = values[9];
-                                double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
-
-                                Column column = new Column(typeID, materialID, length, volume, weight);
-                                columns.AddColumn(column);
-
-                            }
-                            else if (values[1] == "Plate" & line != "")
-                            {
-                                string typeID = values[2];
-                                string materialID = values[3];
-                                string areaString = values[7];
-                                double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string thicknessString = values[4];
-                                double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-
-                                Deck deck = new Deck(typeID, materialID, area, thickness);
-                                decks.AddDeck(deck);
-                            }
-                        else if (values[1] == "Wall" & line != "")
-                            {
-                                string typeID = values[2];
-                                string materialID = values[3];
-                                string areaString = values[7];
-                                double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                string thicknessString = values[4];
-                                double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-
-                                Wall wall = new Wall(typeID, materialID, area, thickness);
-                                walls.AddWall(wall);
-                            }
-
-                            //double length = X509SubjectKeyIdentifierHashAlgorithm nok komme fra struxml
-                            //double volume = values[10];
-                            //ouble weight = values[11];
-                            //Console.WriteLine(string.Format("{0} {1} {2}", values[0], "concrete", values[10]));
-                            //concreteWeight = double.Parse(values[9], CultureInfo.InvariantCulture);
                         }
-                    counter++;
+                          
+                        counter++;
+                        }
+                    else if (currentMaterialString == "Quantity estimation, Reinforcement")
+                    {
+                        var nextLine = reader.ReadLine();
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] == "-" & line != "")
+                            {
+                                if (values[1] == "Beam" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string volumeString = "0";
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = "0";
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
+                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    beams.AddBeam(beam);
+
+                                }
+                                else if (values[1] == "Column" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string volumeString = "0";
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = "0";
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Truss" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string volumeString = "0";
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = "0";
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string areaString = "0";
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = "0";
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+                                else if (values[1] == "Wall" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string areaString = "0";
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = "0";
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
+                                    walls.AddWall(wall);
+                                }
+                            }
+                             
+                        }
+                        counter++;
+                    }
+                    else if (currentMaterialString == "Quantity estimation, Steel")
+                    {
+                        var nextLine = reader.ReadLine();
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] == "-" & line != "")
+                            {
+                                if (values[1] == "Beam" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Steel";
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    beams.AddBeam(beam);
+
+                                }
+                                else if (values[1] == "Column" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "Steel";
+                                    string quality = values[3];
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Truss" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Steel";
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Steel";
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+                                else if (values[1] == "Wall" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Steel";
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
+                                    walls.AddWall(wall);
+                                }
+                            }
+                                
+                        }
+                        counter++;
+                    }
+                    else if (currentMaterialString == "Quantity estimation, Timber")
+                    {
+                        var nextLine = reader.ReadLine();
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] == "-" & line != "")
+                            {
+                                if (values[1] == "Beam" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Timber";
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    beams.AddBeam(beam);
+
+                                }
+                                else if (values[1] == "Column" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "Timber";
+                                    string quality = values[3];
+                                    string volumeString = "0";
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[6];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[7];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Truss" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Timber";
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string lengthString = values[7];
+                                    double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    columns.AddColumn(column);
+
+                                }
+                                else if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Timber";
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+                                else if (values[1] == "Wall" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Timber";
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
+                                    walls.AddWall(wall);
+                                }
+                            }
+
+                        }
+                        counter++;
+                    }
+                     
                     }
                              
                 }
 
-
-
-
-
-                // Display Results on Screen
-                // The results are grouped by their type
-                //var resultGroups = results.GroupBy(t => t.GetType()).ToList();
-                //foreach (var resultGroup in resultGroups)
-                //{
-                //    Console.WriteLine(resultGroup.Key.Name);
-                //    Console.WriteLine();
-                //    foreach (var result in resultGroup)
-                //    {
-                //        Console.WriteLine(result);
-                //    }
-                //    Console.WriteLine();
-
-
-
-                //}
-
-
-
             }
+
+            // Add all structural elements to a Dictionary of Structuralelements
+            Dictionary<string, List<object>> structuralElements = new Dictionary<string, List<object>>();
+
+            structuralElements.Add("Beam", beams.BeamsInModel);
+            structuralElements.Add("Column", columns.ColumnsInModel);
+            structuralElements.Add("Deck", decks.DecksInModel);
+            structuralElements.Add("Wall", walls.WallsInModel);
+            //structuralElements.Add("Foundation", foundations.FoundationsInModel);
+
+            // Lav breakpoint og kopier JSON filen.
+            JsonConvert.SerializeObject(structuralElements);
+
+            File.WriteAllText(@"C:\femdesign-api\Quantities\Structuralelements_Json", JsonConvert.SerializeObject(structuralElements));
+            
         }
 
     }
