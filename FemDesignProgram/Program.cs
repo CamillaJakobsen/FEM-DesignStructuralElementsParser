@@ -17,8 +17,6 @@ using Newtonsoft.Json;
 namespace StructuralElementsExporter.StructuralAnalysis
 {
 
-
-
     public class FemDesignProgram
     {
         static void Main(string[] args)
@@ -41,7 +39,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             {
                 typeof(FemDesign.Results.QuantityEstimationConcrete),
                 typeof(FemDesign.Results.QuantityEstimationReinforcement),
-                //typeof(FemDesign.Results.QuantityEstimationSteel),
+                typeof(FemDesign.Results.QuantityEstimationSteel),
                 typeof(FemDesign.Results.QuantityEstimationTimber),
                 typeof(FemDesign.Results.QuantityEstimationProfiledPlate),
                 typeof(FemDesign.Results.QuantityEstimationTimberPanel)
@@ -67,25 +65,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             // Read model and results
             model = Model.DeserializeFromFilePath(fdScript.StruxmlPath);
             #endregion
-
-            #region EXTRACT RESULTS
-
-            //IEnumerable<FemDesign.Results.IResult> results = Enumerable.Empty<FemDesign.Results.IResult>();
-
-            //foreach (var cmd in fdScript.CmdListGen)
-            //{
-            //    string path2 = cmd.OutFile;
-            //    var _results = FemDesign.Results.ResultsReader.Parse(path2);
-            //    results = results.Concat(_results);
-            //}
-            #endregion
-
-
-            //        //Read results from csv file
-            //        double concreteWeight = 0;
-            //        int counter = 0;
             
-            IEnumerable<FemDesign.Results.IQuantityEstimationResult> quantityEstimations = Enumerable.Empty<FemDesign.Results.IQuantityEstimationResult>();
             Beams beams = new Beams();
             Decks decks = new Decks();
             Walls walls = new Walls();
@@ -303,11 +283,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Steel";
-                                    string volumeString = values[8];
+                                    string volumeString = "0";
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string lengthString = values[7];
+                                    string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Beam beam = new Beam(typeID, material, quality, length, volume, weight);
@@ -319,11 +299,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string material = "Steel";
                                     string quality = values[3];
-                                    string volumeString = values[8];
+                                    string volumeString = "0";
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string lengthString = values[7];
+                                    string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Column column = new Column(typeID, material, quality, length, volume, weight);
@@ -335,11 +315,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Steel";
-                                    string volumeString = values[8];
+                                    string volumeString = "0";
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string lengthString = values[7];
+                                    string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Column column = new Column(typeID, material, quality, length, volume, weight);
@@ -395,11 +375,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string volumeString = values[8];
+                                    string volumeString = "0";
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string lengthString = values[7];
+                                    string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Beam beam = new Beam(typeID, material, quality, length, volume, weight);
@@ -427,11 +407,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string volumeString = values[8];
+                                    string volumeString = "0";
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string lengthString = values[7];
+                                    string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Column column = new Column(typeID, material, quality, length, volume, weight);
@@ -443,11 +423,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string areaString = values[7];
+                                    string areaString = values[6];
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string thicknessString = values[4];
                                     double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
@@ -458,11 +438,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string areaString = values[7];
+                                    string areaString = values[6];
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string thicknessString = values[4];
                                     double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
+                                    string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
