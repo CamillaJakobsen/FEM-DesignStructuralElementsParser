@@ -22,9 +22,14 @@ namespace StructuralElementsExporter.StructuralAnalysis
         static void Main(string[] args)
         {
 
-            string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
-            string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
-            string outFolder = @"C:\femdesign-api\";
+            //string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
+            //string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
+            //string outFolder = @"C:\femdesign-api\";
+            //string tempPath = outFolder + "temp.struxml";
+
+            string path = @"C:\femdesign-api\FEM-design_files\fem-climate-example.struxml";
+            string bscPathtest = @"C:\femdesign-api\FEM-design_files\fem-climate-example.bsc";
+            string outFolder = @"C:\femdesign-api\FEM-design_files\";
             string tempPath = outFolder + "temp.struxml";
 
             //List<XmlElement> xmlElements = new List<XmlElement>();
@@ -91,7 +96,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] == "-" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
                             {
                                 if (values[1] == "Beam" & line != "")
                                 {
@@ -112,7 +117,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                 else if (values[1] == "Column" & line != "")
                                 {
                                     string typeID = values[2];
-                                    string material = "concrete";
+                                    string material = "Concrete";
                                     string quality = values[3];
                                     string volumeString = values[8];
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
@@ -128,7 +133,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                 else if (values[1] == "Truss" & line != "")
                                 {
                                     string typeID = values[2];
-                                    string material = "concrete";
+                                    string material = "Concrete";
                                     string quality = values[3];
                                     string volumeString = values[8];
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
@@ -144,7 +149,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                 else if (values[1] == "Plate" & line != "")
                                 {
                                     string typeID = values[2];
-                                    string material = "concrete";
+                                    string material = "Concrete";
                                     string quality = values[3];
                                     string areaString = values[7];
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
@@ -159,7 +164,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                 else if (values[1] == "Wall" & line != "")
                                 {
                                     string typeID = values[2];
-                                    string material = "concrete";
+                                    string material = "Concrete";
                                     string quality = values[3];
                                     string areaString = values[7];
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
