@@ -13,6 +13,7 @@ using FemDesign.Results;
 using FemDesignProgram.Containers;
 using FemDesign.Materials;
 using Newtonsoft.Json;
+using FemDesignProgram.Helpers;
 
 namespace StructuralElementsExporter.StructuralAnalysis
 {
@@ -487,7 +488,69 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         }
                         counter++;
                     }
-                     
+                    else if (currentMaterialString == "Quantity estimation, Profiled panel")
+                    {
+                        var nextLine = reader.ReadLine();
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            {
+                                if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "Prefabricated Concrete";
+                                    string quality = values[3];
+                                    string areaString = values[7];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[5];
+                                    double thickness = mmTomConverter.Convert(Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture));
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+
+                                counter++;
+                            }
+                        }
+
+                        counter++;
+                    }
+                    else if (currentMaterialString == "Quantity estimation, Timber panel")
+                    {
+                        var nextLine = reader.ReadLine();
+                        while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
+                        {
+                            nextLine = reader.ReadLine();
+                            var values = nextLine.Split("\t");
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            {
+                                if (values[1] == "Plate" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "CLT";
+                                    string quality = values[3];
+                                    string areaString = values[8];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+
+                            counter++;
+                            }
+                        }
+
+                            counter++;
+                    }
+
                     }
                              
                 }
