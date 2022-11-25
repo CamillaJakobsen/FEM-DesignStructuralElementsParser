@@ -22,15 +22,15 @@ namespace StructuralElementsExporter.StructuralAnalysis
         static void Main(string[] args)
         {
 
-            //string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
-            //string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
-            //string outFolder = @"C:\femdesign-api\";
-            //string tempPath = outFolder + "temp.struxml";
-
-            string path = @"C:\femdesign-api\FEM-design_files\fem-climate-example.struxml";
-            string bscPathtest = @"C:\femdesign-api\FEM-design_files\fem-climate-example.bsc";
-            string outFolder = @"C:\femdesign-api\FEM-design_files\";
+            string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
+            string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
+            string outFolder = @"C:\femdesign-api\";
             string tempPath = outFolder + "temp.struxml";
+
+            //string path = @"C:\femdesign-api\FEM-design_files\fem-climate-example.struxml";
+            //string bscPathtest = @"C:\femdesign-api\FEM-design_files\fem-climate-example.bsc";
+            //string outFolder = @"C:\femdesign-api\FEM-design_files\";
+            //string tempPath = outFolder + "temp.struxml";
 
             //List<XmlElement> xmlElements = new List<XmlElement>();
 
@@ -75,6 +75,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             Decks decks = new Decks();
             Walls walls = new Walls();
             Columns columns = new Columns();
+            Foundations foundations = new Foundations();
 
             foreach (var cmd in fdScript.CmdListGen)
             {
@@ -176,6 +177,19 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
                                     walls.AddWall(wall);
                                 }
+                                else if (values[1] == "Foundation slab" || values[1] == "Wall foundation" || values[1] == "Isolated foundation" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "Concrete";
+                                    string quality = values[3];
+                                    string volumeString = values[8];
+                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[9];
+                                    double weight = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
+                                    foundations.AddFoundation(foundation);
+                                }
                                 counter++;
                             }
                         }
@@ -241,19 +255,34 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                 }
                                 else if (values[1] == "Plate" & line != "")
                                 {
-                                    string typeID = values[2];
-                                    string quality = values[3];
-                                    string material = "Reinforcement";
-                                    string areaString = "0";
-                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string thicknessString = "0";
-                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[5];
-                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                        if (values[2].Substring(0, 1) == "P")
+                                        {
+                                            string typeID = values[2];
+                                            string quality = values[3];
+                                            string material = "Reinforcement";
+                                            string areaString = "0";
+                                            double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                            string thicknessString = "0";
+                                            double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                            string weightString = values[5];
+                                            double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
-                                    decks.AddDeck(deck);
-                                }
+                                            Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                            decks.AddDeck(deck);
+                                        }
+                                        if (values[2].Substring(0, 1) == "F")
+                                        {
+                                            string typeID = values[2];
+                                            string quality = values[3];
+                                            string material = "Reinforcement";
+                                            double volume = 0;
+                                            string weightString = values[5];
+                                            double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                            Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
+                                            foundations.AddFoundation(foundation);
+                                        }
+                                    }
                                 else if (values[1] == "Wall" & line != "")
                                 {
                                     string typeID = values[2];
