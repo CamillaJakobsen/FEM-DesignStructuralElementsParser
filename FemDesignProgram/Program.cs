@@ -204,9 +204,10 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] == "-" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
                             {
-                                if (values[1] == "Beam" & line != "")
+                                string typestring = values[2].Substring(0,1);
+                                if (typestring == "B" & line != "")
                                 {
                                     string typeID = values[2];
                                     string quality = values[3];
@@ -222,7 +223,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     beams.AddBeam(beam);
 
                                 }
-                                else if (values[1] == "Column" & line != "")
+                                else if (typestring == "C" & line != "")
                                 {
                                     string typeID = values[2];
                                     string quality = values[3];
@@ -238,7 +239,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     columns.AddColumn(column);
 
                                 }
-                                else if (values[1] == "Truss" & line != "")
+                                else if (typestring == "T" & line != "")
                                 {
                                     string typeID = values[2];
                                     string quality = values[3];
@@ -254,37 +255,36 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     columns.AddColumn(column);
 
                                 }
-                                else if (values[1] == "Plate" & line != "")
+                                else if (typestring == "P" & line != "")
                                 {
-                                        if (values[2].Substring(0, 1) == "P")
-                                        {
-                                            string typeID = values[2];
-                                            string quality = values[3];
-                                            string material = "Reinforcement";
-                                            string areaString = "0";
-                                            double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                            string thicknessString = "0";
-                                            double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                            string weightString = values[5];
-                                            double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                            Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
-                                            decks.AddDeck(deck);
-                                        }
-                                        if (values[2].Substring(0, 1) == "F")
-                                        {
-                                            string typeID = values[2];
-                                            string quality = values[3];
-                                            string material = "Reinforcement";
-                                            double volume = 0;
-                                            string weightString = values[5];
-                                            double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    string areaString = "0";
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = "0";
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                            Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
-                                            foundations.AddFoundation(foundation);
-                                        }
-                                    }
-                                else if (values[1] == "Wall" & line != "")
+                                    Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
+                                    decks.AddDeck(deck);
+                                }
+                                else if (typestring == "F" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string quality = values[3];
+                                    string material = "Reinforcement";
+                                    double volume = 0;
+                                    string weightString = values[5];
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+
+                                    Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
+                                    foundations.AddFoundation(foundation);
+                                }
+                                    
+                                else if (typestring == "W" & line != "")
                                 {
                                     string typeID = values[2];
                                     string quality = values[3];
@@ -311,7 +311,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] == "-" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
                             {
                                 if (values[1] == "Beam" & line != "")
                                 {
@@ -403,7 +403,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] == "-" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & line != "")
                             {
                                 if (values[1] == "Beam" & line != "")
                                 {
@@ -564,7 +564,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             structuralElements.Add("Column", columns.ColumnsInModel);
             structuralElements.Add("Deck", decks.DecksInModel);
             structuralElements.Add("Wall", walls.WallsInModel);
-            //structuralElements.Add("Foundation", foundations.FoundationsInModel);
+            structuralElements.Add("Foundation", foundations.FoundationsInModel);
 
             // Lav breakpoint og kopier JSON filen.
             JsonConvert.SerializeObject(structuralElements);
