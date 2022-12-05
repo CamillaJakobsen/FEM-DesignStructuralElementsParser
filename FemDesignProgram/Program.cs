@@ -204,7 +204,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & values[0] != "TOTAL" & line != "")
                             {
                                 string typestring = values[2].Substring(0,1);
                                 if (typestring == "B" & line != "")
@@ -311,7 +311,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & values[0] != "TOTAL" & line != "")
                             {
                                 if (values[1] == "Beam" & line != "")
                                 {
@@ -403,7 +403,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & values[0] != "TOTAL" & line != "")
                             {
                                 if (values[1] == "Beam" & line != "")
                                 {
@@ -495,7 +495,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & values[0] != "TOTAL" & line != "")
                             {
                                 if (values[1] == "Plate" & line != "")
                                 {
@@ -526,7 +526,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                         {
                             nextLine = reader.ReadLine();
                             var values = nextLine.Split("\t");
-                            if (values[0] != "Storey" & values[0] != "" & line != "")
+                            if (values[0] != "Storey" & values[0] != "" & values[0] != "TOTAL" & line != "")
                             {
                                 if (values[1] == "Plate" & line != "")
                                 {
