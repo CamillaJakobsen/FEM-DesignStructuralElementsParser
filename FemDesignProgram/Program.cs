@@ -567,7 +567,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             structuralElements.Add("Foundation", foundations.FoundationsInModel);
 
             // Lav breakpoint og kopier JSON filen.
-            JsonConvert.SerializeObject(structuralElements);
+            JsonConvert.SerializeObject(structuralElements, (Formatting)1);
 
             File.WriteAllText(@"C:\femdesign-api\Quantities\Structuralelements_Json", JsonConvert.SerializeObject(structuralElements));
             
