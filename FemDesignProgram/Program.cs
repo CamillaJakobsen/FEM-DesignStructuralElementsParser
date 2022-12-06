@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using FemDesign;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using FemDesign.Results;
 using FemDesignProgram.Containers;
-using FemDesign.Materials;
 using Newtonsoft.Json;
 using FemDesignProgram.Helpers;
 
@@ -25,8 +20,6 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
             string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
             string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
-            string outFolder = @"C:\femdesign-api\";
-            string tempPath = outFolder + "temp.struxml";
 
             //string path = @"C:\femdesign-api\FEM-design_files\fem-climate-example.struxml";
             //string bscPathtest = @"C:\femdesign-api\FEM-design_files\fem-climate-example.bsc";
@@ -39,8 +32,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             Model model = Model.DeserializeFromFilePath(path);
             //Quantities quantities = quantities.DeserializeFromFilePath(bscPathtest);
 
-            var units = new FemDesign.Results.UnitResults(FemDesign.Results.Length.m, FemDesign.Results.Angle.deg, FemDesign.Results.SectionalData.mm, FemDesign.Results.Force.kN, FemDesign.Results.Mass.kg, FemDesign.Results.Displacement.cm, FemDesign.Results.Stress.MPa);
-
+            
             var resultTypes = new List<Type>
             {
                 typeof(FemDesign.Results.QuantityEstimationConcrete),
@@ -81,8 +73,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             foreach (var cmd in fdScript.CmdListGen)
             {
                 
-                string csvfiles = cmd.OutFile;
-                var _results = FemDesign.Results.ResultsReader.Parse(csvfiles);
+                string csvfiles = cmd.OutFile;              
                 int counter = 0;
                 using (var reader = new StreamReader(csvfiles))
                 {
@@ -186,7 +177,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string volumeString = values[8];
                                     double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string weightString = values[9];
-                                    double weight = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
                                     Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
                                     foundations.AddFoundation(foundation);
