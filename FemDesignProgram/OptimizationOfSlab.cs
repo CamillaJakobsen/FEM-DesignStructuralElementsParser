@@ -11,7 +11,7 @@ namespace FemDesignProgram
 {
     //public partial class OptimizationOfSlab
     //{
-        
+
     //    static void Main(string[] args)
     //    {
     //        string path = @"C:\Users\camil\FEM-design_API_deck.struxml";
@@ -24,8 +24,10 @@ namespace FemDesignProgram
     //        bscPaths.Add(bscPathQEreinforcement);
 
     //        Model model = Model.DeserializeFromFilePath(path);
-    //        double concreteCost = 10;
-    //        double reinforcementCost = 70;
+              // CO2 udledning pr kg armeringsstål 
+    //        double concreteCarbon = 0,1125;
+    //        // CO2 udledning pr kg beton med en massefylde på 2246 kg/m3
+    //        double reinforcementCarbon = 0,6841;
     //        double concreteWeight = 0;
     //        double reinforcementWeight = 0;
 
@@ -97,7 +99,7 @@ namespace FemDesignProgram
     //        FemDesign.Calculate.FdScript fdScript = FemDesign.Calculate.FdScript.Design("rc", modelPath, analysis, design, bscFilePaths, "", true);
     //        FemDesign.Calculate.Application app = new FemDesign.Calculate.Application();
     //        app.RunFdScript(fdScript, false, true, true);
-            
+
     //    }
 
     //    public static double ConcreteWeight()
