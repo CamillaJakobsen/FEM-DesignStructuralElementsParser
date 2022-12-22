@@ -18,11 +18,15 @@ namespace StructuralElementsExporter.StructuralAnalysis
         public void Takeoff()
         {
 
-            string path = @"C:\femdesign-api\Quantities\FEM-design_quantities.struxml";
-            string bscPathtest = @"C:\femdesign-api\quantities_test.bsc";
+            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Quantities\FEM-design_quantities.struxml";
+            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
 
-            //string path = @"C:\femdesign-api\FEM-design_files\fem-climate-example.struxml";
-            //string bscPathtest = @"C:\femdesign-api\FEM-design_files\fem-climate-example.bsc";
+            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Fem-design-modeller-Rambøll\B6_5D_ver.struxml";
+            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
+
+
+            string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.struxml";
+            string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.bsc";
             //string outFolder = @"C:\femdesign-api\FEM-design_files\";
             //string tempPath = outFolder + "temp.struxml";
 
@@ -103,7 +107,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[9];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    Beam beam = new Beam(typeID, material, quality, volume, weight);
                                     beams.AddBeam(beam);
 
                                 }
@@ -119,7 +123,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[9];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -135,7 +139,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[9];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -210,7 +214,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[5];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    Beam beam = new Beam(typeID, material, quality, volume, weight);
                                     beams.AddBeam(beam);
 
                                 }
@@ -226,7 +230,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[5];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -242,7 +246,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[5];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -316,7 +320,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    Beam beam = new Beam(typeID, material, quality, volume, weight);
                                     beams.AddBeam(beam);
 
                                 }
@@ -332,7 +336,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -348,7 +352,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -408,7 +412,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Beam beam = new Beam(typeID, material, quality, length, volume, weight);
+                                    Beam beam = new Beam(typeID, material, quality, volume, weight);
                                     beams.AddBeam(beam);
 
                                 }
@@ -424,7 +428,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -440,7 +444,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
-                                    Column column = new Column(typeID, material, quality, length, volume, weight);
+                                    Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
                                 }
@@ -560,7 +564,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             // Lav breakpoint og kopier JSON filen.
             JsonConvert.SerializeObject(structuralElements, (Formatting)1);
 
-            File.WriteAllText(@"C:\femdesign-api\Quantities\Structuralelements_Json", JsonConvert.SerializeObject(structuralElements));
+            File.WriteAllText(@"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Quantities\Structuralelements_Json", JsonConvert.SerializeObject(structuralElements));
             
         }
 

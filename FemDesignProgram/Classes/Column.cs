@@ -12,7 +12,6 @@ namespace FemDesignProgram.Containers
         public string TypeID { get; set; }
         public string Material { get; set; }
         public string Quality { get; set; }
-        public double Length { get; set; }
 
         public double Volume { get; set; }
 
@@ -21,12 +20,11 @@ namespace FemDesignProgram.Containers
         //public Dictionary<string, string> MaterialProperties { get; set; } = new Dictionary<string, string>();
 
         // Constructor: Starts with lower case letter
-        public Column(string typeID, string material,string quality, double length, double volume, double weight)
+        public Column(string typeID, string material,string quality, double volume, double weight)
         {
             TypeID = typeID;
             Material = material;
             Quality = quality;
-            Length = length;
             Volume = volume;
             Weight = weight;
 

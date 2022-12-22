@@ -16,10 +16,10 @@ namespace FemDesignProgram
 
         public void SlabOptimisation()
         {
-            string path = @"C:\femdesign-api\Optimisation\sample_optimisation_slab.struxml";
-            string bscPathQEconcrete = @"C:\femdesign-api\Optimisation\QEconcrete.bsc";
-            string bscPathQEreinforcement = @"C:\femdesign-api\Optimisation\QEreinforcement.bsc";
-            string outFolder = @"C:\femdesign-api\Optimisation\Outputs";
+            string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Optimisation\sample_optimisation_slab.struxml";
+            string bscPathQEconcrete = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Optimisation\QEconcrete.bsc";
+            string bscPathQEreinforcement = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Optimisation\QEreinforcement.bsc";
+            string outFolder = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Optimisation\Outputs";
             string tempPath = outFolder + "temp.struxml";
             List<string> bscPaths = new List<string>();
             bscPaths.Add(bscPathQEconcrete);
