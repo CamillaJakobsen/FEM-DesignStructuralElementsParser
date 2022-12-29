@@ -9,6 +9,8 @@ using System.Globalization;
 using FemDesignProgram.Containers;
 using Newtonsoft.Json;
 using FemDesignProgram.Helpers;
+using FemDesign.Shells;
+using FemDesign.Results;
 
 namespace StructuralElementsExporter.StructuralAnalysis
 {
@@ -24,9 +26,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
             //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Fem-design-modeller-Rambøll\B6_5D_ver.struxml";
             //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
 
+            string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\Testing\FEM-design_2\FEM-design_timber model.struxml";
+            string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
 
-            string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.struxml";
-            string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.bsc";
+            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.struxml";
+            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.bsc";
             //string outFolder = @"C:\femdesign-api\FEM-design_files\";
             //string tempPath = outFolder + "temp.struxml";
 
@@ -88,7 +92,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
                     string currentMaterialString = valuesMaterial[0];
                     if (currentMaterialString == "Quantity estimation, Concrete")
                     {
-                            var nextLine = reader.ReadLine(); 
+                        var nextLine = reader.ReadLine(); 
                         while (!nextLine.Contains("TOTAL") && !reader.EndOfStream)
                         {
                             nextLine = reader.ReadLine();
@@ -110,6 +114,17 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     Beam beam = new Beam(typeID, material, quality, volume, weight);
                                     beams.AddBeam(beam);
 
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * length;
+                                        quality = "";
+
+                                        Beam beamReinforcement = new Beam(typeID, material, quality, volume, weight);
+                                        beams.AddBeam(beamReinforcement);
+
+                                    }
+
                                 }
                                 else if (values[1] == "Column" & line != "")
                                 {
@@ -125,6 +140,17 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
                                     Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
+
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * length;
+                                        quality = "";
+
+                                        Column columnReinforcement = new Column(typeID, material, quality, volume, weight);
+                                        columns.AddColumn(columnReinforcement);
+
+                                    }
 
                                 }
                                 else if (values[1] == "Truss" & line != "")
@@ -142,6 +168,17 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     Column column = new Column(typeID, material, quality, volume, weight);
                                     columns.AddColumn(column);
 
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * length;
+                                        quality = "";
+
+                                        Column columnReinforcement = new Column(typeID, material, quality, volume, weight);
+                                        columns.AddColumn(columnReinforcement);
+
+                                    }
+
                                 }
                                 else if (values[1] == "Plate" & line != "")
                                 {
@@ -157,6 +194,16 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
                                     Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
                                     decks.AddDeck(deck);
+
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * area;
+                                        quality = "";
+                                        Deck deckReinforcement = new Deck(typeID, material, quality, area, thickness, weight);
+                                        decks.AddDeck(deckReinforcement);
+
+                                    }
                                 }
                                 else if (values[1] == "Wall" & line != "")
                                 {
@@ -172,6 +219,17 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
                                     Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
                                     walls.AddWall(wall);
+
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * area;
+                                        quality = "";
+                                        Wall wallReinforcement = new Wall(typeID, material, quality, area, thickness, weight);
+                                        walls.AddWall(wallReinforcement);
+
+                                    }
+
                                 }
                                 else if (values[1] == "Foundation slab" || values[1] == "Wall foundation" || values[1] == "Isolated foundation" & line != "")
                                 {
@@ -185,7 +243,19 @@ namespace StructuralElementsExporter.StructuralAnalysis
 
                                     Foundation foundation = new Foundation(typeID, material, quality, volume, weight);
                                     foundations.AddFoundation(foundation);
-                                }
+
+                                    if (values[11] != "" & values[11] != null)
+                                    {
+                                        material = "Reinforcement";
+                                        weight = Double.Parse(values[11].Replace('.', '.'), CultureInfo.InvariantCulture) * Double.Parse(values[7].Replace('.', '.'), CultureInfo.InvariantCulture);
+                                        quality = "";
+
+                                        Foundation foundationReinforcement = new Foundation(typeID, material, quality, volume, weight);
+                                        foundations.AddFoundation(foundationReinforcement);
+
+                                    }
+
+                                    }
                                 counter++;
                             }
                         }
@@ -405,10 +475,11 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string volumeString = "0";
-                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string volumeString = values[4];
+                                    string[] volumeStringSplitted = volumeString.Split(' ', 'x');
+                                    double volume = mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[1])) * mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[2])) * length;
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
@@ -421,10 +492,12 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string material = "Timber";
                                     string quality = values[3];
-                                    string volumeString = "0";
-                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string volumeString = values[4];
+                                    string[] volumeStringSplitted = volumeString.Split(' ', 'x');
+                                    double volume = mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[1])) * mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[2])) * length;
+
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 
@@ -437,10 +510,12 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string quality = values[3];
                                     string material = "Timber";
-                                    string volumeString = "0";
-                                    double volume = Double.Parse(volumeString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string lengthString = values[6];
                                     double length = Double.Parse(lengthString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string volumeString = values[4];
+                                    string[] volumeStringSplitted = volumeString.Split(' ', 'x');
+                                    double volume = mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[1])) * mmTomConverter.Convert(Convert.ToDouble(volumeStringSplitted[2])) * length;
+
                                     string weightString = values[7];
                                     double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
 

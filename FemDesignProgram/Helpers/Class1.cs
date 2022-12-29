@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace FemDesignProgram.Helpers
 {
-    public class mmTomConverter
+    internal class Class1
     {
-        public static double Convert(double mm)
-        {
-            return mm / 1000;
-        }
     }
 }

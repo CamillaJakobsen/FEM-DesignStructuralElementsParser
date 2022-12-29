@@ -79,8 +79,11 @@ namespace FemDesignProgram
             double low = 0.2;
             double high = 1;
 
+            //Second Loop
+            Dictionary<string, double> concreteStrength = new Dictionary<string, double>();
 
-            List<double> GWP = new List<double>();
+
+        List<double> GWP = new List<double>();
 
             for (double i = low; i < high; i = i + 0.05)
             {
