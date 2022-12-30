@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace FemDesignProgram.Helpers
 {
-    internal class Class1
+    public class fixThicknessOfProfiledPlate
     {
+        public static double Convert(double mm)
+        {
+            return mm * 1000;
+        }
     }
 }

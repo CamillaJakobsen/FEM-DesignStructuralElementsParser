@@ -465,12 +465,12 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     string typeID = values[2];
                                     string material = "Prefabricated Concrete";
                                     string quality = values[3];
-                                    string areaString = values[7];
+                                    string areaString = values[9];
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string thicknessString = values[5];
-                                    double thickness = mmTomConverter.Convert(Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture));
-                                    string weightString = values[9];
-                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    double thickness = fixThicknessOfProfiledPlate.Convert(Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture));
+                                    string weightString = values[12];
+                                    double weight = tTokgConverter.Convert(Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture));
 
                                     Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
                                     decks.AddDeck(deck);
@@ -500,14 +500,28 @@ namespace StructuralElementsExporter.StructuralAnalysis
                                     double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
                                     string thicknessString = values[4];
                                     double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
-                                    string weightString = values[9];
-                                    double weight = Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[11];
+                                    double weight = tTokgConverter.Convert(Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture));
 
                                     Deck deck = new Deck(typeID, material, quality, area, thickness, weight);
                                     decks.AddDeck(deck);
                                 }
+                                else if (values[1] == "Wall" & line != "")
+                                {
+                                    string typeID = values[2];
+                                    string material = "CLT";
+                                    string quality = values[3];
+                                    string areaString = values[8];
+                                    double area = Double.Parse(areaString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string thicknessString = values[4];
+                                    double thickness = Double.Parse(thicknessString.Replace('.', '.'), CultureInfo.InvariantCulture);
+                                    string weightString = values[11];
+                                    double weight = tTokgConverter.Convert(Double.Parse(weightString.Replace('.', '.'), CultureInfo.InvariantCulture));
 
-                            counter++;
+                                    Wall wall = new Wall(typeID, material, quality, area, thickness, weight);
+                                    walls.AddWall(wall);
+                                }
+                                    counter++;
                             }
                         }
 
