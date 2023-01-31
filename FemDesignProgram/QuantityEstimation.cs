@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using FemDesign;
+﻿using FemDesign;
 using System.Globalization;
 using FemDesignProgram.Containers;
 using Newtonsoft.Json;
 using FemDesignProgram.Helpers;
-using FemDesign.Shells;
-using FemDesign.Results;
 
 namespace StructuralElementsExporter.StructuralAnalysis
 {
@@ -20,27 +12,16 @@ namespace StructuralElementsExporter.StructuralAnalysis
         public void Takeoff()
         {
 
-            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Quantities\FEM-design_quantities.struxml";
-            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
-
-            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Fem-design-modeller-Rambøll\B6_5D_ver.struxml";
-            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
-
+            //The path to the struXML file is inserted here
             string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\Testing\FEM-design_2\FEM-design_timber model.struxml";
+            //The path for placement of the BSC files is inserted here
             string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\quantities_test.bsc";
-
-            //string path = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.struxml";
-            //string bscPathtest = @"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\FEM-design_files\fem-climate-example.bsc";
-            //string outFolder = @"C:\femdesign-api\FEM-design_files\";
-            //string tempPath = outFolder + "temp.struxml";
-
-            //List<XmlElement> xmlElements = new List<XmlElement>();
 
             // Read model
             Model model = Model.DeserializeFromFilePath(path);
             //Quantities quantities = quantities.DeserializeFromFilePath(bscPathtest);
 
-            
+            // Creates a list with the needed quantity estimations
             var resultTypes = new List<Type>
             {
                 typeof(FemDesign.Results.QuantityEstimationConcrete),
@@ -54,7 +35,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             // Creating the bsc paths in C:\femdesign-api\quantities_test\scripts
             var bscPathsFromResultTypes = FemDesign.Calculate.Bsc.BscPathFromResultTypes(resultTypes, bscPathtest);
 
-
+            // Set up of the analysis
             #region ANALYSIS
             // Running the analysis
             var analysisSettings = FemDesign.Calculate.Analysis.StaticAnalysis();
@@ -72,15 +53,16 @@ namespace StructuralElementsExporter.StructuralAnalysis
             model = Model.DeserializeFromFilePath(fdScript.StruxmlPath);
             #endregion
             
+            // Create lists of structural elements
             Beams beams = new Beams();
             Decks decks = new Decks();
             Walls walls = new Walls();
             Columns columns = new Columns();
             Foundations foundations = new Foundations();
 
+            // Loops through the csv files of the quantity estimation and assigns parameters to the containers saccording to the relevant constructor
             foreach (var cmd in fdScript.CmdListGen)
-            {
-                
+            {   
                 string csvfiles = cmd.OutFile;              
                 int counter = 0;
                 using (var reader = new StreamReader(csvfiles))
@@ -543,7 +525,7 @@ namespace StructuralElementsExporter.StructuralAnalysis
             structuralElements.Add("Wall", walls.WallsInModel);
             structuralElements.Add("Foundation", foundations.FoundationsInModel);
 
-            // Lav breakpoint og kopier JSON filen.
+            // Serialise structural elements to a JSON
             JsonConvert.SerializeObject(structuralElements, (Formatting)1);
 
             File.WriteAllText(@"C:\Users\camil\OneDrive\OneDrive_Privat\OneDrive\Bygningsdesign kandidat\Speciale\femdesign-api\Quantities\Structuralelements_Json", JsonConvert.SerializeObject(structuralElements));
